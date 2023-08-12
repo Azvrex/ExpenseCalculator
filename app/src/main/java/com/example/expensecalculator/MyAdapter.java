@@ -72,6 +72,8 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
             public void onClick(View v) {
                 deleteItem(position); // Delete the item when the ImageButton is clicked
                 deleteListener.onItemDeleted();
+                notifyDataSetChanged();
+
             }
         });
 

@@ -5,20 +5,18 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.text.DecimalFormat;
 import java.util.List;
 
 public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
     private List<Item> itemList;
     private Context context;
-    private onItemDeleteListener deleteListener;
+    private functionIntefaces deleteListener;
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         public TextView txtViewItem, txtViewCost;
@@ -31,7 +29,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
         }
 
     }
-    public MyAdapter(List<Item> itemList, Context context,onItemDeleteListener listener) {
+    public MyAdapter(List<Item> itemList, Context context, functionIntefaces listener) {
         this.itemList = itemList;
         this.context = context;
         this.deleteListener = listener;

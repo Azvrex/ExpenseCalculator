@@ -1,27 +1,36 @@
 package com.example.expensecalculator;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.cardview.widget.CardView;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.media.Image;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.github.mikephil.charting.charts.PieChart;
+import com.github.mikephil.charting.data.PieData;
+import com.github.mikephil.charting.data.PieDataSet;
+import com.github.mikephil.charting.data.PieEntry;
+import com.github.mikephil.charting.formatter.PercentFormatter;
+import com.github.mikephil.charting.utils.ColorTemplate;
+
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-public class MainActivity extends AppCompatActivity implements onItemDeleteListener{
+public class MainActivity extends AppCompatActivity implements functionIntefaces {
 
     private RadioButton radbtnBudget, radbtnExpense;
     private RadioGroup radGroup;
@@ -36,6 +45,8 @@ public class MainActivity extends AppCompatActivity implements onItemDeleteListe
     private String category;
     private DBHelper dbHelper;
     private TextView txtIncome, txtExpenses, txtNetTotal;
+    private PieChart pieChart;
+    private CardView cardChartExpenses;
     //private ImageButton imgBtnClose;
 
 
@@ -70,6 +81,7 @@ public class MainActivity extends AppCompatActivity implements onItemDeleteListe
         itemList.addAll(itemDBHelper.getAllItems());
         adapterRecycleView.notifyDataSetChanged();
         onItemDeleted();
+        setPieChartExpenses();
 
         radGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
@@ -139,13 +151,61 @@ public class MainActivity extends AppCompatActivity implements onItemDeleteListe
         txtExpenses.setText(String.valueOf(totalExpensesCost));
 
         txtNetTotal.setText(String.valueOf(totalNet));
-        if (totalExpensesCost>0){
+        if (totalNet>0){
             txtNetTotal.setTextColor(ContextCompat.getColor(this, R.color.green));
         }else{
             txtNetTotal.setTextColor(ContextCompat.getColor(this, R.color.red));
         }
 
         dbHelper.close();
+    }
+
+    @Override
+    public void setPieChartExpenses() {
+        pieChart = findViewById(R.id.pieChartExpenses);
+        dbHelper = new DBHelper(this);
+        cardChartExpenses = findViewById(R.id.cardChartExpenses);
+        ArrayList<PieEntry> expensesList = new ArrayList<>();
+
+        HashMap<String, Double> aggregatedExpenses = dbHelper.getExpenses();
+        if(!aggregatedExpenses.isEmpty()) {
+            cardChartExpenses.setVisibility(View.VISIBLE);
+            double totalCost=0;
+            /*for (Map.Entry<String, Double> entry : aggregatedExpenses.entrySet()) {
+                expensesList.add(new PieEntry(entry.getValue().floatValue(), entry.getKey()));
+            }*/
+            // Calculate the total cost
+            for (Map.Entry<String, Double> entry : aggregatedExpenses.entrySet()) {
+                totalCost += entry.getValue();
+            }
+            // Create PieEntry objects and calculate percentages
+            for (Map.Entry<String, Double> entry : aggregatedExpenses.entrySet()) {
+                double cost = entry.getValue();
+                float percentage = (float) ((cost / totalCost) * 100.0);
+
+                // Create PieEntry with label as "Name (Percentage%)"
+                expensesList.add(new PieEntry((float) cost, entry.getKey() + " (" + String.format("%.2f", percentage) + "%)"));
+            }
+        }else{
+            cardChartExpenses.setVisibility(View.GONE);
+        }
+
+        PieDataSet dataSet = new PieDataSet(expensesList, "Expenses");
+        dataSet.setColors(ColorTemplate.COLORFUL_COLORS);
+        dataSet.setValueTextColor(Color.BLACK);
+        dataSet.setValueTextSize(12f);
+        dataSet.setValueFormatter(new PercentFormatter(pieChart)); // Set the percentage formatter
+        PieData data = new PieData(dataSet);
+
+
+        pieChart.setData(data);
+        pieChart.getDescription().setEnabled(false);
+        pieChart.setHoleRadius(20f);
+        pieChart.setTransparentCircleRadius(25f);
+
+        pieChart.animateY(1000);
+        // Refresh the chart
+        pieChart.invalidate();
     }
 
 

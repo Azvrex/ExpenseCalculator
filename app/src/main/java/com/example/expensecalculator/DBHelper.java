@@ -7,6 +7,8 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
+import java.util.HashMap;
+
 public class DBHelper extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "Budget_database.db";
 
@@ -80,5 +82,47 @@ public class DBHelper extends SQLiteOpenHelper {
         }
 
         return totalCost;
+    }
+
+    public HashMap getExpenses() {
+        SQLiteDatabase db = this.getReadableDatabase();
+        String[] projection = {"item_name", "cost"};
+        String selection = "category=?";
+        String[] selectionArgs = {"Expenses"};
+
+        Cursor cursor = db.query(
+                "items",
+                projection,
+                selection,
+                selectionArgs,
+                null,
+                null,
+                null
+        );
+
+        HashMap<String, Double> aggregatedExpenses = null;
+        if (cursor != null) {
+            aggregatedExpenses = new HashMap<>();
+
+            while (cursor.moveToNext()) {
+                // Retrieve the name and cost values from the current row in the cursor
+                String name = cursor.getString(cursor.getColumnIndexOrThrow("item_name"));
+                double cost = cursor.getDouble(cursor.getColumnIndexOrThrow("cost"));
+                // Check if the name already exists in the HashMap
+                if (aggregatedExpenses.containsKey(name)) {
+                    // If the name already exists, get the current aggregated cost for that name
+                    double currentCost = aggregatedExpenses.get(name);
+                    // Add the cost from the current row to the existing aggregated cost
+                    aggregatedExpenses.put(name, currentCost + cost);
+                } else {
+                    // If the name doesn't exist in the HashMap, add it with the current cost
+                    aggregatedExpenses.put(name, cost);
+                }
+            }
+
+            cursor.close();
+        }
+
+        return aggregatedExpenses;
     }
 }

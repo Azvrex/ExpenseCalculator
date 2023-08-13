@@ -1,4 +1,4 @@
-package com.example.expensecalculator;
+package com.example.expensecalculator.Helper;
 
 import android.annotation.SuppressLint;
 import android.content.Context;

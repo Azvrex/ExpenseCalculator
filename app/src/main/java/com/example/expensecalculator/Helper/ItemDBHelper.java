@@ -1,10 +1,13 @@
-package com.example.expensecalculator;
+package com.example.expensecalculator.Helper;
 
 import android.annotation.SuppressLint;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+
+import com.example.expensecalculator.Helper.DBHelper;
+import com.example.expensecalculator.Item;
 
 import java.util.ArrayList;
 import java.util.List;

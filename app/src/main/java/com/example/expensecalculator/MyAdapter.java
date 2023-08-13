@@ -11,12 +11,14 @@ import android.widget.TextView;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.expensecalculator.Helper.DBHelper;
+
 import java.util.List;
 
 public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
     private List<Item> itemList;
     private Context context;
-    private functionIntefaces deleteListener;
+    private functionIntefaces listener;
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         public TextView txtViewItem, txtViewCost;
@@ -32,7 +34,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
     public MyAdapter(List<Item> itemList, Context context, functionIntefaces listener) {
         this.itemList = itemList;
         this.context = context;
-        this.deleteListener = listener;
+        this.listener = listener;
     }
 
     public void deleteItem(int position) {
@@ -69,8 +71,10 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
             @Override
             public void onClick(View v) {
                 deleteItem(position); // Delete the item when the ImageButton is clicked
-                deleteListener.onItemDeleted();
+                listener.onItemDeleted();
+                listener.setPieChartExpenses();
                 notifyDataSetChanged();
+
 
             }
         });

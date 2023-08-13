@@ -1,6 +1,7 @@
 package com.example.expensecalculator;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.cardview.widget.CardView;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -17,6 +18,8 @@ import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.example.expensecalculator.Helper.DBHelper;
+import com.example.expensecalculator.Helper.ItemDBHelper;
 import com.github.mikephil.charting.charts.PieChart;
 import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
@@ -54,6 +57,7 @@ public class MainActivity extends AppCompatActivity implements functionIntefaces
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
 
         radbtnBudget = findViewById(R.id.radbtnBudget);
         radbtnExpense = findViewById(R.id.radbtnExpense);
@@ -130,6 +134,7 @@ public class MainActivity extends AppCompatActivity implements functionIntefaces
             edtItemName.setText("");
             edtCost.setText("");
             onItemDeleted();
+            setPieChartExpenses();
         }
     }
 
@@ -193,7 +198,7 @@ public class MainActivity extends AppCompatActivity implements functionIntefaces
         PieDataSet dataSet = new PieDataSet(expensesList, "Expenses");
         dataSet.setColors(ColorTemplate.COLORFUL_COLORS);
         dataSet.setValueTextColor(Color.BLACK);
-        dataSet.setValueTextSize(12f);
+        dataSet.setValueTextSize(15f);
         dataSet.setValueFormatter(new PercentFormatter(pieChart)); // Set the percentage formatter
         PieData data = new PieData(dataSet);
 
@@ -202,6 +207,7 @@ public class MainActivity extends AppCompatActivity implements functionIntefaces
         pieChart.getDescription().setEnabled(false);
         pieChart.setHoleRadius(20f);
         pieChart.setTransparentCircleRadius(25f);
+
 
         pieChart.animateY(1000);
         // Refresh the chart
